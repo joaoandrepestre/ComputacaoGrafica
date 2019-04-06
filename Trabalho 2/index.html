@@ -15,11 +15,19 @@
 <body>
     <h1>Ray Casting</h1>
     <div>
+        <h3>Froma a desenhar</h3>
         Poligono
-        <input type="radio" name="Poligono" id="pol" onclick="defineModoDesenho(id)">
+        <input type="radio" name="Poligono" id="pol" onclick="defineModoDesenho(id)" checked>
         Raio
-        <input type="radio" name="Raio" id="rai" onclick="defineModoDesenho(id)">
+        <input type="radio" name="Raio" id="rai" value="false" onclick="defineModoDesenho(id)">
     </div>
+    <div>
+            <h3>Modo</h3>
+            Criar
+            <input type="radio" name="Criar" id="criar" onclick="defineModo(id)" checked>
+            Editar
+            <input type="radio" name="Editar" id="editar" value="false" onclick="defineModo(id)">
+        </div>
 </body>
 
 </html>

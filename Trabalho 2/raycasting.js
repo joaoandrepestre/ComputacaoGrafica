@@ -10,17 +10,17 @@ function setup() {
     createCanvas(1280, 720);
 }
 
-function defineModo(id){
+function defineModo(id) {
 
-    if(id == 'criar' && modo == 1){
+    if (id == 'criar' && modo == 1) {
         document.getElementById('editar').checked = false;
         modo = 0;
     }
 
-    if(id == 'editar' && modo == 0){
+    if (id == 'editar' && modo == 0) {
         document.getElementById('criar').checked = false;
         modo = 1;
-    } 
+    }
 
 }
 
@@ -48,11 +48,29 @@ function defineModoDesenho(id) {
 }
 
 
+function mousePressed() {
+    poligonos.forEach(pol => {
+        pol.mousePressed();
+    });
+    raios.forEach(rai => {
+        rai.mousePressed();
+    });
+}
+
+function mouseReleased() {
+    poligonos.forEach(pol => {
+        pol.mouseReleased();
+    });
+    raios.forEach(rai => {
+        rai.mouseReleased();
+    });
+}
+
 function mouseClicked() {
 
     // Encontra modo de desenho
 
-    if (0 < mouseX && mouseX < width && 0 < mouseY && mouseY < height) {
+    if (0 < mouseX && mouseX < width && 0 < mouseY && mouseY < height && modo == 0) {
         switch (modoDesenho) {
             case 0: // Polígono
                 if (!drawing) {
@@ -81,15 +99,18 @@ function doubleClicked() {
     if (modoDesenho == 0) {
         drawing = false;
         pol.drawing = false;
+        pol.vertices.splice(pol.vertices.length - 1, 1);
     }
 }
 
 function draw() {
     background(200);
     poligonos.forEach(pol => {
-        pol.draw();
+        if (modo == 1) pol.editar();
+        pol.draw(modo);
     });
     raios.forEach(rai => {
+        if (modo == 1) rai.editar();
         rai.draw();
     });
 }

@@ -8,6 +8,7 @@ class Raio {
         this.tam = 50;
         this.angle = undefined;
         this.drawing = true;
+        this.modoEdicao = undefined;
     }
 
     defineDir(pontoX, pontoY) {
@@ -16,6 +17,35 @@ class Raio {
             y: pontoY - this.origem.y
         };
         this.angle = atan2(dir.y, dir.x);
+    }
+
+    mousePressed(){
+        
+        let dist = (mouseX - this.origem.x) * (mouseX - this.origem.x) + (mouseY - this.origem.y) * (mouseY - this.origem.y);
+        dist = sqrt(dist);
+
+        if(dist <= this.tam){
+            if(dist <= 7){
+                this.modoEdicao = 0; // Editando origem
+            }
+            else{
+                this.modoEdicao = 1; // Editando angulo
+            }
+        }
+    }
+
+    mouseReleased(){
+        this.modoEdicao = undefined;
+    }
+
+    editar(){
+        if(this.modoEdicao === 0){
+            this.origem.x = mouseX;
+            this.origem.y = mouseY;
+        }
+        if(this.modoEdicao === 1){
+            this.defineDir(mouseX, mouseY);
+        }
     }
 
     drawVector(fim){

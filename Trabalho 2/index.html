@@ -13,21 +13,25 @@
 </head>
 
 <body>
-    <h1>Ray Casting</h1>
     <div>
-        <h3>Froma a desenhar</h3>
+        <h3>Modo</h3>
+        Criar
+        <input type="radio" name="Criar" id="criar" onclick="defineModo(id)" checked>
+        Editar
+        <input type="radio" name="Editar" id="editar" value="false" onclick="defineModo(id)">
+    </div>
+    <div>
+        <h3>Forma a desenhar</h3>
         Poligono
         <input type="radio" name="Poligono" id="pol" onclick="defineModoDesenho(id)" checked>
         Raio
         <input type="radio" name="Raio" id="rai" value="false" onclick="defineModoDesenho(id)">
     </div>
+    <br>
     <div>
-            <h3>Modo</h3>
-            Criar
-            <input type="radio" name="Criar" id="criar" onclick="defineModo(id)" checked>
-            Editar
-            <input type="radio" name="Editar" id="editar" value="false" onclick="defineModo(id)">
-        </div>
+        Mostrar interseções
+        <input type="radio" name="mostrar" id="mostrar" onclick="mostraInter()">
+    </div>
 </body>
 
 </html>

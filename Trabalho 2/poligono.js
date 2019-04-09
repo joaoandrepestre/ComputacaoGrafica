@@ -1,5 +1,6 @@
 class Poligono {
 
+    // Cria novo objeto polígono
     constructor(newX, newY) {
         this.vertices = [];
         this.adicionaVertice(newX, newY);
@@ -7,6 +8,7 @@ class Poligono {
         this.pontoSelect = undefined;
     }
 
+    // Adiciona um novo vértice ao polígono
     adicionaVertice(newX, newY) {
         const ponto = {
             x: newX,
@@ -15,6 +17,7 @@ class Poligono {
         this.vertices.push(ponto);
     }
 
+    // Lida com o mouse pressionado com relação ao polígono
     mousePressed() {
         this.vertices.forEach(ponto => {
             let dist = (mouseX - ponto.x) * (mouseX - ponto.x) + (mouseY - ponto.y) * (mouseY - ponto.y);
@@ -25,10 +28,12 @@ class Poligono {
         });
     }
 
+    // Lida com o mouse liberado com relação ao polígono
     mouseReleased(){
         this.pontoSelect = undefined;
     }
 
+    // Move o ponto selecionado para a posição atual do mouse
     editar() {
 
         if(this.pontoSelect){
@@ -37,6 +42,7 @@ class Poligono {
         }
     }
 
+    // Desenha o polígono no canvas
     draw(editando) {
 
         push(); // Salva estilo anterior

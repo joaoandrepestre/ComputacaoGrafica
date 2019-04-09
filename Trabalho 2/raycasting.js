@@ -5,11 +5,17 @@ let rai;
 let drawing = false;
 let modoDesenho = 0; // Polígono: 0 - Raio: 1
 let modo = 0; // Criar: 0 - Editar: 1
+let mostrar = false;
 
+
+// Inicia o canvas onde a cena será desenhada
 function setup() {
     createCanvas(1280, 720);
 }
 
+// Callbacks para o DOM
+
+// Define se o usuário está criando ou editando objetos
 function defineModo(id) {
 
     if (id == 'criar' && modo == 1) {
@@ -24,6 +30,7 @@ function defineModo(id) {
 
 }
 
+// Define se o usuário está criando polígonos ou raios
 function defineModoDesenho(id) {
 
     if (id == 'rai' && modoDesenho == 0) {
@@ -47,7 +54,24 @@ function defineModoDesenho(id) {
     }
 }
 
+// Define se o usuário está vendo ou não as interseções dos raios com os polígonos
+function mostraInter() {
+    mostrar = !mostrar;
+    document.getElementById('mostrar').checked = mostrar;
+}
 
+// Fim das callbacks para o DOM
+
+// Checa se o mouse está dentro do canvas
+function mouseInCanvas() {
+    return (0 < mouseX && mouseX < width && 0 < mouseY && mouseY < height);
+}
+
+
+
+// Event handlers
+
+// Lida com o mouse pressionado, útil para edição
 function mousePressed() {
     poligonos.forEach(pol => {
         pol.mousePressed();
@@ -57,6 +81,7 @@ function mousePressed() {
     });
 }
 
+// Lida com o mouse liberado, útil para edição
 function mouseReleased() {
     poligonos.forEach(pol => {
         pol.mouseReleased();
@@ -66,11 +91,10 @@ function mouseReleased() {
     });
 }
 
+// Lida com o clique do mouse, útil para criação
 function mouseClicked() {
 
-    // Encontra modo de desenho
-
-    if (0 < mouseX && mouseX < width && 0 < mouseY && mouseY < height && modo == 0) {
+    if (mouseInCanvas() && modo == 0) {
         switch (modoDesenho) {
             case 0: // Polígono
                 if (!drawing) {
@@ -95,14 +119,19 @@ function mouseClicked() {
     }
 }
 
+
+// Lida com clique duplo do mouse, útil para finalização de polígonos
 function doubleClicked() {
-    if (modoDesenho == 0) {
+    if (mouseInCanvas() && modo == 0 && modoDesenho == 0) {
         drawing = false;
         pol.drawing = false;
         pol.vertices.splice(pol.vertices.length - 1, 1);
     }
 }
 
+// Fim dos event handlers
+
+// Desenha cena no canvas
 function draw() {
     background(200);
     poligonos.forEach(pol => {
@@ -111,6 +140,7 @@ function draw() {
     });
     raios.forEach(rai => {
         if (modo == 1) rai.editar();
-        rai.draw();
+        if(mostrar) rai.calculaInter(poligonos);
+        rai.draw(modo, mostrar);
     });
 }

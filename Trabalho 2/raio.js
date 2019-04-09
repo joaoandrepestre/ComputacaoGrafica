@@ -1,5 +1,6 @@
 class Raio {
 
+    // Cria um novo objeto raio
     constructor(newX, newY) {
         this.origem = {
             x: newX,
@@ -9,8 +10,10 @@ class Raio {
         this.angle = undefined;
         this.drawing = true;
         this.modoEdicao = undefined;
+        this.intersects = [];
     }
 
+    // Define direção em que o raio está apontado
     defineDir(pontoX, pontoY) {
         let dir = {
             x: pontoX - this.origem.x,
@@ -19,39 +22,72 @@ class Raio {
         this.angle = atan2(dir.y, dir.x);
     }
 
-    mousePressed(){
-        
+    // Lida com o mouse pressionado com relação ao raio
+    mousePressed() {
+
         let dist = (mouseX - this.origem.x) * (mouseX - this.origem.x) + (mouseY - this.origem.y) * (mouseY - this.origem.y);
         dist = sqrt(dist);
 
-        if(dist <= this.tam){
-            if(dist <= 7){
+        if (dist <= this.tam) {
+            if (dist <= 7) {
                 this.modoEdicao = 0; // Editando origem
-            }
-            else{
+            } else {
                 this.modoEdicao = 1; // Editando angulo
             }
         }
     }
 
-    mouseReleased(){
+    // Lida com o mouse liberado com relação ao raio
+    mouseReleased() {
         this.modoEdicao = undefined;
     }
 
-    editar(){
-        if(this.modoEdicao === 0){
+    // Encontra pontos de interseção do raio com os polígonos
+    calculaInter(poligonos) {
+
+        this.intersects = [];
+
+        let linha = {
+            a: tan(this.angle),
+            b: this.origem.y - this.origem.x * tan(this.angle)
+        };
+
+
+        poligonos.forEach(pol => {
+            pol.vertices.forEach((ponto, i) => {
+                if (i < pol.vertices.length-1) {
+                    let pontoProx = pol.vertices[i + 1];
+                    let ang = (pontoProx.y - ponto.y) / (pontoProx.x - ponto.x);
+                    let aresta = {
+                        a: ang,
+                        b: ponto.y - ponto.x * ang
+                    };
+                    let inter = {
+                        x: (aresta.b - linha.b) / (linha.a - aresta.a),
+                    };
+                    inter.y = linha.a * inter.x + linha.b;
+                    this.intersects.push(inter);
+                }
+            });
+        });
+    }
+
+    // Modifica a posição da origem ou a direção do raio
+    editar() {
+        if (this.modoEdicao === 0) {
             this.origem.x = mouseX;
             this.origem.y = mouseY;
         }
-        if(this.modoEdicao === 1){
+        if (this.modoEdicao === 1) {
             this.defineDir(mouseX, mouseY);
         }
     }
 
-    drawVector(fim){
+    // Desenha uma seta na direção do raio
+    drawVector(fim) {
 
         push(); // Salva estilo anterior
-        
+
         // Desenha linha da seta
         stroke(0);
         strokeWeight(2);
@@ -61,21 +97,23 @@ class Raio {
         // Desenha triangulo na ponta
         strokeWeight(1);
         translate(fim.x, fim.y);
-        rotate(this.angle+HALF_PI);
-        let offset = this.tam*0.1;
+        rotate(this.angle + HALF_PI);
+        let offset = this.tam * 0.1;
         fill(0);
-        triangle(-offset*0.5, offset, offset*0.5, offset, 0, -offset/2);
+        triangle(-offset * 0.5, offset, offset * 0.5, offset, 0, -offset / 2);
         // Fim do triangulo
 
         pop(); // Retorna ao estilo anterior
     }
 
-    draw() {
+    // Desenha o raio no canvas
+    draw(editando, inter) {
 
         push(); // Salva estilo anterior
         // Desenha origem
         translate(this.origem.x, this.origem.y);
-        fill(0, 0, 255);                            
+        fill(0, 0, 255);
+        if (editando && this.modoEdicao === 0) fill(255, 0, 0);
         noStroke();
         ellipse(0, 0, 7, 7);
         // Fim do desenho da origem
@@ -94,8 +132,18 @@ class Raio {
 
         // Desenha linha infinita na direção do raio
         stroke(50);
-        line(0,0,fim.x*width,fim.y*width);
+        line(0, 0, fim.x * width, fim.y * width);
         // Fim do desenho da linha infinita
+
+        if (inter) {
+            push();
+            console.log(this.intersects);
+            this.intersects.forEach(ponto => {
+                strokeWeight(5);
+                point(ponto.x, ponto.y);
+            });
+            pop();
+        }
 
         pop(); // Retorna ao estilo anterior  
     }

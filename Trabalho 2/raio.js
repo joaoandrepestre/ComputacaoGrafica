@@ -91,13 +91,23 @@ class Raio {
                 inter.y = linha.a * inter.x + linha.b;
 
                 let fim = {
-                    x: this.origem.x + width*cos(this.angle),
-                    y: this.origem.y + width*sin(this.angle)
+                    x: this.origem.x + width * cos(this.angle),
+                    y: this.origem.y + width * sin(this.angle)
                 };
 
-                if (this.pontoEntrePontos(inter, ponto, pontoProx) && this.pontoEntrePontos(inter, this.origem,fim)) {
+                if (this.pontoEntrePontos(inter, ponto, pontoProx) && this.pontoEntrePontos(inter, this.origem, fim)) {
                     this.intersects.push(inter);
                 }
+
+                this.intersects.sort((pontoA, pontoB) => {
+
+                    let distA = (pontoA.x - this.origem.x) * (pontoA.x - this.origem.x) + (pontoA.y - this.origem.y) * (pontoA.y - this.origem.y);
+                    let distB = (pontoB.x - this.origem.x) * (pontoB.x - this.origem.x) + (pontoB.y - this.origem.y) * (pontoB.y - this.origem.y);
+
+                    if (distA < distB) return -1;
+                    if (distA > distB) return 1;
+                    return 0;
+                });
             });
         });
     }
@@ -176,11 +186,17 @@ class Raio {
 
         if (mostrar) {
             push();
-            //console.log(this.intersects);
             this.intersects.forEach((ponto, i) => {
                 strokeWeight(5);
-                /* if(i%2) stroke(255,0,0);
-                else stroke(0,0,255); */
+
+                if (this.intersects.length % 2) {
+                    if (i % 2) stroke(0, 0, 255);
+                    else stroke(255, 0, 0);
+                } else {
+                    if (i % 2) stroke(255, 0, 0);
+                    else stroke(0, 0, 255);
+                }
+
                 point(ponto.x, ponto.y);
             });
             pop();

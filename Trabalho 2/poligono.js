@@ -52,8 +52,8 @@ class Poligono {
         this.vertices.forEach(ponto => {
             if (editando) {
                 push();
-                fill(0);
-                if(this.pontoSelect && ponto.x == this.pontoSelect.x && ponto.y == this.pontoSelect.y) fill(0,0,255);
+                fill(0,0,255);
+                if(this.pontoSelect && ponto.x == this.pontoSelect.x && ponto.y == this.pontoSelect.y) fill(255,0,0);
                 ellipse(ponto.x, ponto.y, 5);
                 pop();
             }

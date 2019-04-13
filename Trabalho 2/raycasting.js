@@ -62,11 +62,11 @@ function mostraInter() {
 
 // Fim das callbacks para o DOM
 
+
 // Checa se o mouse está dentro do canvas
 function mouseInCanvas() {
     return (0 < mouseX && mouseX < width && 0 < mouseY && mouseY < height);
 }
-
 
 
 // Event handlers

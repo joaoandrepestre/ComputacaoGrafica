@@ -73,7 +73,8 @@ class Raio {
         };
 
 
-        poligonos.forEach(pol => {
+        poligonos.forEach((pol, j) => {
+            this.intersects.push([]);
             pol.vertices.forEach((ponto, i) => {
                 let pontoProx;
                 if (i < pol.vertices.length - 1) {
@@ -96,10 +97,10 @@ class Raio {
                 };
 
                 if (this.pontoEntrePontos(inter, ponto, pontoProx) && this.pontoEntrePontos(inter, this.origem, fim)) {
-                    this.intersects.push(inter);
+                    this.intersects[j].push(inter);
                 }
 
-                this.intersects.sort((pontoA, pontoB) => {
+                this.intersects[j].sort((pontoA, pontoB) => {
 
                     let distA = (pontoA.x - this.origem.x) * (pontoA.x - this.origem.x) + (pontoA.y - this.origem.y) * (pontoA.y - this.origem.y);
                     let distB = (pontoB.x - this.origem.x) * (pontoB.x - this.origem.x) + (pontoB.y - this.origem.y) * (pontoB.y - this.origem.y);
@@ -186,18 +187,20 @@ class Raio {
 
         if (mostrar) {
             push();
-            this.intersects.forEach((ponto, i) => {
-                strokeWeight(5);
+            this.intersects.forEach(polInter => {
+                polInter.forEach((ponto, i) => {
+                    strokeWeight(5);
 
-                if (this.intersects.length % 2) {
-                    if (i % 2) stroke(0, 0, 255);
-                    else stroke(255, 0, 0);
-                } else {
-                    if (i % 2) stroke(255, 0, 0);
-                    else stroke(0, 0, 255);
-                }
+                    if (polInter.length % 2) {
+                        if (i % 2) stroke(0, 0, 255);
+                        else stroke(255, 0, 0);
+                    } else {
+                        if (i % 2) stroke(255, 0, 0);
+                        else stroke(0, 0, 255);
+                    }
 
-                point(ponto.x, ponto.y);
+                    point(ponto.x, ponto.y);
+                });
             });
             pop();
         }

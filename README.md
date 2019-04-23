@@ -1,8 +1,9 @@
 # ComputacaoGrafica
 
 ## Como utilizar:
-1. Abrir arquivo index.html em um navegador
-2. Interagir com a interface definida
+1. Clonar o repositório
+2. Abrir arquivo index.html em um navegador
+3. Interagir com a interface definida
 
 ## Criação de objetos:
 1. Selecionar modo criação

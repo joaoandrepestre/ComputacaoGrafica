@@ -1,16 +1,35 @@
-let poligonos = [];
-let raios = [];
+let poligonos;
+let raios;
 let pol;
 let rai;
-let drawing = false;
-let modoDesenho = 0; // Polígono: 0 - Raio: 1
-let modo = 0; // Criar: 0 - Editar: 1
-let mostrar = false;
+let drawing;
+let modoDesenho; // Polígono: 0 - Raio: 1
+let modo; // Criar: 0 - Editar: 1
+let mostrar;
 
 
 // Inicia o canvas onde a cena será desenhada
 function setup() {
     createCanvas(1280, 720);
+    
+    poligonos = [];
+    raios = [];
+    
+    pol = undefined;
+    rai = undefined;
+    drawing = false;
+    
+    modo = 0;
+    document.getElementById('criar').checked = true;
+    document.getElementById('editar').checked = false;
+
+    modoDesenho = 0;
+    document.getElementById('pol').checked = true;
+    document.getElementById('rai').checked = false;
+
+    mostrar = false;
+    document.getElementById('mostrar').checked = false;
+
 }
 
 // Callbacks para o DOM

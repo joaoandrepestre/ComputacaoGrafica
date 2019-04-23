@@ -26,6 +26,17 @@ function defineModo(id) {
     if (id == 'editar' && modo == 0) {
         document.getElementById('criar').checked = false;
         modo = 1;
+        if (pol) {
+            pol.drawing = false;
+            pol = undefined;
+        }
+
+        if (rai != undefined && rai.drawing) {
+            raios.splice(raios.length - 1, 1);
+            rai = undefined;
+        }
+
+        drawing = false;
     }
 
 }
@@ -73,11 +84,15 @@ function mouseInCanvas() {
 
 // Lida com o mouse pressionado, útil para edição
 function mousePressed() {
-    poligonos.forEach(pol => {
-        pol.mousePressed();
+
+    let tmp = false;
+
+    tmp = raios.some(rai => {
+        return rai.mousePressed();
     });
-    raios.forEach(rai => {
-        rai.mousePressed();
+
+    if (!tmp) poligonos.some(pol => {
+        return pol.mousePressed();
     });
 }
 
@@ -140,7 +155,7 @@ function draw() {
     });
     raios.forEach(rai => {
         if (modo == 1) rai.editar();
-        if(mostrar) rai.calculaInter(poligonos);
+        if (mostrar) rai.calculaInter(poligonos);
         rai.draw(modo, mostrar);
     });
 }

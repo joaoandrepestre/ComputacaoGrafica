@@ -38,6 +38,8 @@ class Poligono {
                 this.arrastar = false;
             }
         });
+
+        return (this.pontoSelect != undefined || this.arrastar)
     }
 
     // Lida com o mouse liberado com relação ao polígono
@@ -72,7 +74,7 @@ class Poligono {
         push(); // Salva estilo anterior
 
         fill(152, 251, 152, 50);
-        if(this.arrastar) fill(152, 251, 152, 100);
+        if(editando && this.arrastar) fill(152, 251, 152, 100);
         beginShape();
         this.vertices.forEach(ponto => {
             if (editando) {

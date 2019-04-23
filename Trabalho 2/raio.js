@@ -28,13 +28,20 @@ class Raio {
         let dist = (mouseX - this.origem.x) * (mouseX - this.origem.x) + (mouseY - this.origem.y) * (mouseY - this.origem.y);
         dist = sqrt(dist);
 
+        let linha = {
+            a: tan(this.angle),
+            b: this.origem.y - this.origem.x * tan(this.angle)
+        };
+
         if (dist <= this.tam) {
             if (dist <= 7) {
                 this.modoEdicao = 0; // Editando origem
-            } else {
+            } else if(abs(linha.a*mouseX + linha.b - mouseY) <= 2) {
                 this.modoEdicao = 1; // Editando angulo
             }
         }
+
+        return (this.modoEdicao != undefined)
     }
 
     // Lida com o mouse liberado com relação ao raio

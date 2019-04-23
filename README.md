@@ -27,7 +27,7 @@
 1. Segurar o botão do mouse posicionado sobre o ponto azul na origem do raio seleciona a origem para edição
 2. Arrastar o mouse com a origem selecionada move a origem segundo o movimento do mouse
 3. Soltar o mouse finaliza a edição
-4. Segurar o botão do mouse posicionado dentro da circunferência definida pela origem do raio e pela ponta da seta seleciona a direção do raio para edição
+4. Segurar o botão do mouse posicionado sobre a seta do raio seleciona a direção do raio para edição
 5. Arrastar o mouse com a direção selecionada redefine a direção para seguir a posição do mouse
 6. Soltar o mouse finaliza a edição
 

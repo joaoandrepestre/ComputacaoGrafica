@@ -9,6 +9,7 @@ class Cube {
         let arc_radius = 1.1*this.diagonal()/2;
 
         this.arcball = new Arcball(this.position, arc_radius);
+        this.showArcball = false;
 
         let geometry = new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z);
         let material = new THREE.MeshBasicMaterial({
@@ -16,15 +17,17 @@ class Cube {
         });
 
         this.mesh = new THREE.Mesh(geometry, material);
+
+        this.update();
+        this.addToScene();
     }
 
     diagonal(){
         return Math.sqrt(this.size.x*this.size.x + this.size.y*this.size.y + this.size.z*this.size.z);
     }
 
-    addToScene(scene) {
+    addToScene() {
         scene.add(this.mesh);
-        this.arcball.addToScene(scene);
     }
 
     translate(transVector){
@@ -47,6 +50,24 @@ class Cube {
         this.mesh.rotation.x = this.rotation.x;
         this.mesh.rotation.y = this.rotation.y;
         this.mesh.rotation.z = this.rotation.z;
+
+        if(this.showArcball) this.arcball.addToScene();
+        else this.arcball.removeFromScene();
+    }
+
+    onDoubleClick(event){
+
+        raycaster.setFromCamera(mouse, camera);
+        let intersects = raycaster.intersectObject(this.mesh);
+
+        if(intersects.length > 0){
+            this.showArcball = !this.showArcball;
+            showSceneArcball = false;
+            return true;
+        }
+
+        this.showArcball = false;
+        return false;
     }
 
 }

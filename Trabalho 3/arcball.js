@@ -12,13 +12,15 @@ class Arcball{
         });
 
         this.mesh = new THREE.Mesh(geometry, material);
+
+        this.update();
     }
 
-    addToScene(scene){
+    addToScene(){
         scene.add(this.mesh);
     }
 
-    removeFromScene(scene){
+    removeFromScene(){
         scene.remove(this.mesh);
     }
 

@@ -10,8 +10,11 @@ let renderer;
 
 // Project variables
 let cubes = [];
+let selectedCube = undefined;
 let sceneArcball;
 let showSceneArcball = false;
+let sceneCenter;
+let sceneRadius;
 
 // Setup function - initializes project and THREE js variables
 function setup() {
@@ -28,7 +31,7 @@ function setup() {
     document.body.appendChild(renderer.domElement);
 
     // Generate the cubes
-    let pos = {x: -1, y: -1, z: -1};
+    let pos = {x: -2, y: -2, z: -2};
     let rot = {x: 0, y: 0, z: 0};
     let size = {x: 1, y: 1, z: 1};
     cube1 = new Cube(pos, rot, size, 0x00ff00);
@@ -41,9 +44,14 @@ function setup() {
     cubes.push(cube2);
 
     // Creates the global arcball to rotate the scene
-    sceneArcball = new Arcball(centroid(), 3*cubes[0].arcball.radius);
+    sceneCenter = centroid();
+    sceneRadius = radius();
+    sceneArcball = new Arcball(sceneCenter, sceneRadius);
+
+    camera.position.z = 5;
 }
 
+// Calculate the center os the scene 
 function centroid(){
     let centroid = {x: 0, y: 0, z: 0};
     let n = cubes.length;
@@ -54,7 +62,6 @@ function centroid(){
         centroid.z += cube.position.z;
     });
 
-
     centroid.x /= n;
     centroid.y /= n;
     centroid.z /= n;
@@ -62,10 +69,36 @@ function centroid(){
     return centroid;
 }
 
+// Calculate the radius of the scene
 function radius(){
+    let maxDistance = 0;
+    let maxIndex;
+    let d;
 
+    cubes.forEach((cube, i)=>{
+        d = distance(cube);
+        if(maxDistance < d){
+            maxDistance = d;
+            maxIndex = i;
+        }
+    });
+
+    maxDistance += cubes[maxIndex].diagonal()/2; 
+
+    return 1.1*maxDistance;
 }
 
+// Calculate the distance of the cube to the center of the scene
+function distance(cube){
+    let d = (cube.position.x - sceneCenter.x)*(cube.position.x - sceneCenter.x);
+    d += (cube.position.y - sceneCenter.y)*(cube.position.y - sceneCenter.y);
+    d += (cube.position.z - sceneCenter.z)*(cube.position.z - sceneCenter.z);
+
+    return Math.sqrt(d);
+}
+
+
+// Handles mouse double click
 function onDoubleClick(event){
     let tmp = false;
 
@@ -74,26 +107,37 @@ function onDoubleClick(event){
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y =   - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-    tmp = cubes.some(cube=>{
-        return cube.onDoubleClick(event);
+    cubes.forEach(cube=>{
+        if(cube.onDoubleClick()) tmp = true;
     });
 
     if(!tmp){
+        selectedCube = undefined;
         showSceneArcball = !showSceneArcball;
     }
 }
 
+
+// Updates the scene
 function updateScene(){
     cubes[0].rotate({x: 0.01, y: 0, z: 0});
     cubes[1].rotate({x: -0.01, y: 0, z: 0});
+    
     cubes.forEach(cube=>{
         cube.update();
     });
 
+    sceneCenter = centroid();
+    sceneRadius = radius();
+    sceneArcball.position = sceneCenter;
+    sceneArcball.radius = sceneRadius;
     if(showSceneArcball) sceneArcball.addToScene();
     else sceneArcball.removeFromScene();
+
 }
 
+
+// Animate function - called every frame of the animation
 function animate() {
     requestAnimationFrame(animate);
     updateScene();
@@ -101,7 +145,5 @@ function animate() {
 }
 
 setup();
-
-camera.position.z = 5;
 
 animate();

@@ -55,18 +55,21 @@ class Cube {
         else this.arcball.removeFromScene();
     }
 
-    onDoubleClick(event){
+    onDoubleClick(){
 
         raycaster.setFromCamera(mouse, camera);
         let intersects = raycaster.intersectObject(this.mesh);
 
         if(intersects.length > 0){
             this.showArcball = !this.showArcball;
+            if(selectedCube===this) selectedCube = undefined;
+            else selectedCube = this;
             showSceneArcball = false;
             return true;
         }
 
         this.showArcball = false;
+
         return false;
     }
 

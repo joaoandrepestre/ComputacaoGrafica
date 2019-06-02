@@ -1,5 +1,7 @@
-// Event handling 
+// Event handling
+document.addEventListener('click', onClick, false); 
 document.addEventListener('dblclick', onDoubleClick, false);
+document.addEventListener('wheel' , onWheel, false);
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
 
@@ -12,9 +14,10 @@ let renderer;
 let cubes = [];
 let selectedCube = undefined;
 let sceneArcball;
-let showSceneArcball = false;
+let transformation_mode = 0; // 0 - translation; 1 - rotation
 let sceneCenter;
 let sceneRadius;
+
 
 // Setup function - initializes project and THREE js variables
 function setup() {
@@ -31,24 +34,23 @@ function setup() {
     document.body.appendChild(renderer.domElement);
 
     // Generate the cubes
-    let pos = {x: -2, y: -2, z: -2};
-    let rot = {x: 0, y: 0, z: 0};
-    let size = {x: 1, y: 1, z: 1};
-    cube1 = new Cube(pos, rot, size, 0x00ff00);
-    cubes.push(cube1);
-
-    pos = {x: 1, y: 1, z: 1};
-    rot = {x: 0, y: 0, z: 0};
-    size = {x: 1, y: 1, z: 1};
-    cube2 = new Cube(pos, rot, size, 0xff0000);
-    cubes.push(cube2);
-
+    let pos;
+    let rot;
+    let size;
+    for(let i=0;i<10;i++){
+        pos = {x: -5+5*Math.random(), y: 5+5*Math.random(), z: 5+5*Math.random()};
+        rot = {x: 5+5*Math.random(), y: 5+5*Math.random(), z: 5+5*Math.random()};
+        size = {x: 3*Math.random(), y: 3*Math.random(), z: 3*Math.random()};
+        cubes.push(new Cube(pos, rot, size));
+    }
     // Creates the global arcball to rotate the scene
     sceneCenter = centroid();
     sceneRadius = radius();
     sceneArcball = new Arcball(sceneCenter, sceneRadius);
 
-    camera.position.z = 5;
+    camera.position.x = sceneCenter.x;
+    camera.position.y = sceneCenter.y;
+    camera.position.z = sceneCenter.z + 10;
 }
 
 // Calculate the center os the scene 
@@ -97,31 +99,40 @@ function distance(cube){
     return Math.sqrt(d);
 }
 
-
-// Handles mouse double click
-function onDoubleClick(event){
-    let tmp = false;
-
+// Handles mouse click - selects the clicked cube
+function onClick(event){
     event.preventDefault();
+
+    let tmp = false;
         
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y =   - ( event.clientY / window.innerHeight ) * 2 + 1;
 
     cubes.forEach(cube=>{
-        if(cube.onDoubleClick()) tmp = true;
+        if(cube.onClick()) tmp = true;
     });
 
     if(!tmp){
         selectedCube = undefined;
-        showSceneArcball = !showSceneArcball;
     }
+}
+
+// Handles mouse double click - toggles tranformation mode between translation and rotation
+function onDoubleClick(event){
+    transformation_mode = !transformation_mode;
+}
+
+// Handles mouse wheel scroll - zooms in and out of the scene
+function onWheel(event){
+    event.preventDefault();
+
+    if(event.deltaY < 0) camera.position.z -= 1;
+    else if(event.deltaY > 0) camera.position.z += 1;
 }
 
 
 // Updates the scene
 function updateScene(){
-    cubes[0].rotate({x: 0.01, y: 0, z: 0});
-    cubes[1].rotate({x: -0.01, y: 0, z: 0});
     
     cubes.forEach(cube=>{
         cube.update();
@@ -131,7 +142,8 @@ function updateScene(){
     sceneRadius = radius();
     sceneArcball.position = sceneCenter;
     sceneArcball.radius = sceneRadius;
-    if(showSceneArcball) sceneArcball.addToScene();
+    sceneArcball.update();
+    if(selectedCube === undefined && transformation_mode == 1) sceneArcball.addToScene();
     else sceneArcball.removeFromScene();
 
 }

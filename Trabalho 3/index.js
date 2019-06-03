@@ -2,12 +2,16 @@
 document.addEventListener('click', onClick, false);
 document.addEventListener('dblclick', onDoubleClick, false);
 document.addEventListener('wheel', onWheel, false);
+document.addEventListener('mousemove', onMouseMove, false);
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
+let mouseDown = false;
 
 // THREE js variables
 let scene;
 let camera;
+let aspect;
+let frustumSize;
 let renderer;
 
 // Project variables
@@ -26,7 +30,9 @@ function setup() {
     scene.background = new THREE.Color(0xffffff);
 
     // Creates a camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    frustumSize = 1000;
+    aspect = window.innerWidth / window.innerHeight
+    camera = new THREE.PerspectiveCamera(75, aspect, 0.1, frustumSize);
 
     // Creates a renderer
     renderer = new THREE.WebGLRenderer();
@@ -119,6 +125,7 @@ function distance(cube) {
 // Handles mouse click - selects the clicked cube
 function onClick(event) {
     event.preventDefault();
+
     let intersects;
     let interIndex = 0;
 
@@ -156,9 +163,24 @@ function onWheel(event) {
     else if (event.deltaY > 0) camera.position.z += 1;
 }
 
+function onMouseMove(event){
+    event.preventDefault();
+    let transVector = {x: 0, y: 0, z: 0};
+
+    if(event.buttons == 1){
+        if(transformation_mode == 0 && selectedCube){ // Translation
+            transVector.x = (event.movementX / window.innerWidth) * 2 - 1;
+            transVector.y = -(event.movementY / window.innerHeight) * 2 + 1;
+
+            selectedCube.translate(transVector);
+        }
+    }
+}
 
 // Updates the scene
 function updateScene() {
+
+
 
     cubes.forEach(cube => {
         cube.update();
@@ -166,6 +188,10 @@ function updateScene() {
 
     sceneCenter = centroid();
     sceneRadius = radius();
+    scene.position.x = sceneCenter.x;
+    scene.position.y = sceneCenter.y;
+    scene.position.z = sceneCenter.z;
+
     sceneArcball.position = sceneCenter;
     sceneArcball.radius = sceneRadius;
     sceneArcball.update();

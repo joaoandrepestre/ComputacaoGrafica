@@ -6,7 +6,7 @@ class Cube {
         this.rotation = _rot;
         this.size = _size;
 
-        let arc_radius = 1.1*this.diagonal()/2;
+        let arc_radius = 1.1 * this.diagonal() / 2;
 
         this.arcball = new Arcball(this.position, arc_radius);
 
@@ -46,8 +46,8 @@ class Cube {
     }
 
     // Calculate the diagonal of the cube
-    diagonal(){
-        return Math.sqrt(this.size.x*this.size.x + this.size.y*this.size.y + this.size.z*this.size.z);
+    diagonal() {
+        return Math.sqrt(this.size.x * this.size.x + this.size.y * this.size.y + this.size.z * this.size.z);
     }
 
     // Adds the cube to the scene
@@ -56,7 +56,7 @@ class Cube {
     }
 
     // Translates the cube according to transVector
-    translate(transVector){
+    translate(transVector) {
         this.position.x += transVector.x;
         this.position.y += transVector.y;
         this.position.z += transVector.z;
@@ -72,7 +72,7 @@ class Cube {
     }
 
     // Updates the cubes position and rotation
-    update(){
+    update() {
         this.mesh.position.x = this.position.x;
         this.mesh.position.y = this.position.y;
         this.mesh.position.z = this.position.z;
@@ -83,21 +83,7 @@ class Cube {
 
         this.arcball.update();
 
-        if(selectedCube === this && transformation_mode == 1) this.arcball.addToScene();
+        if (selectedCube === this && transformation_mode == 1) this.arcball.addToScene();
         else this.arcball.removeFromScene();
-    }
-
-    // Handles mouse click - checks if this is the selected cube
-    onClick(){
-        raycaster.setFromCamera(mouse, camera);
-        let intersects = raycaster.intersectObject(this.mesh);
-
-        if(intersects.length > 0){
-            if(selectedCube===this) selectedCube = undefined;
-            else selectedCube = this;
-            return true;
-        }
-
-        return false;
     }
 }

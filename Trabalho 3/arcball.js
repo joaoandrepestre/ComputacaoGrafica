@@ -1,7 +1,7 @@
-class Arcball{
+class Arcball {
 
     // Constructor - initializes the arcballs local fields
-    constructor(_pos, _radius){
+    constructor(_pos, _radius) {
         this.position = _pos;
         this.radius = _radius;
 
@@ -19,24 +19,24 @@ class Arcball{
     }
 
     // Adds the arcball to the scene
-    addToScene(){
+    addToScene() {
         scene.add(this.mesh);
     }
 
     // Removes the arcball from the scene
-    removeFromScene(){
+    removeFromScene() {
         scene.remove(this.mesh);
     }
-    
+
     // Translates the cube according to transVector
-    translate(transVector){
+    translate(transVector) {
         this.position.x += transVector.x;
         this.position.y += transVector.y;
         this.position.z += transVector.z;
     }
 
     // Updates the arcballs position
-    update(){
+    update() {
         this.mesh.position.x = this.position.x;
         this.mesh.position.y = this.position.y;
         this.mesh.position.z = this.position.z;

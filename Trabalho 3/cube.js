@@ -61,7 +61,7 @@ class Cube {
         this.position.y += transVector.y;
         this.position.z += transVector.z;
 
-        arcball.translate(transVector);
+        this.arcball.translate(transVector);
     }
 
     // Rotate the cube according to rotVector

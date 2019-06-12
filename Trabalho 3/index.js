@@ -1,5 +1,5 @@
 // Event handling
-document.addEventListener('click', onClick, false);
+document.addEventListener('mousedown', onMouseDown, false);
 document.addEventListener('dblclick', onDoubleClick, false);
 document.addEventListener('wheel', onWheel, false);
 document.addEventListener('mousemove', onMouseMove, false);
@@ -27,39 +27,45 @@ let sceneRadius;
 function setup() {
     // Creates scene with a white background
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0xfafafa);
 
     // Creates a camera
     frustumSize = 1000;
     aspect = window.innerWidth / window.innerHeight
-    camera = new THREE.PerspectiveCamera(75, aspect, 0.1, frustumSize);
+    camera = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
+    //camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, frustumSize);
 
     // Creates a renderer
     renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.sortObjects = true;
     document.body.appendChild(renderer.domElement);
+
+    let light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 1).normalize();
+    scene.add(light);
 
     // Generate the cubes
     let pos;
     let rot;
     let size;
     for (let i = 0; i < 10; i++) {
-        pos = {
-            x: -5 + 10 * Math.random(),
-            y: -5 + 10 * Math.random(),
-            z: -5 + 10 * Math.random()
-        };
-        rot = {
-            x: -5 + 10 * Math.random(),
-            y: -5 + 10 * Math.random(),
-            z: -5 + 10 * Math.random()
-        };
-        size = {
-            x: 3 * Math.random(),
-            y: 3 * Math.random(),
-            z: 3 * Math.random()
-        };
+        pos = new THREE.Vector3(
+            -5 + 10 * Math.random(),
+            -5 + 10 * Math.random(),
+            -5 + 10 * Math.random()
+        );
+        rot = new THREE.Vector3(
+            -5 + 10 * Math.random(),
+            -5 + 10 * Math.random(),
+            -5 + 10 * Math.random()
+        );
+        size = new THREE.Vector3(
+            1 + 2 * Math.random(),
+            1 + 2 * Math.random(),
+            1 + 2 * Math.random()
+        );
         cubes.push(new Cube(pos, rot, size));
     }
     // Creates the global arcball to rotate the scene
@@ -69,16 +75,12 @@ function setup() {
 
     camera.position.x = sceneCenter.x;
     camera.position.y = sceneCenter.y;
-    camera.position.z = sceneCenter.z + 1.18 * sceneRadius;
+    camera.position.z = sceneCenter.z + 1.1 * sceneRadius;
 }
 
 // Calculate the center os the scene 
 function centroid() {
-    let centroid = {
-        x: 0,
-        y: 0,
-        z: 0
-    };
+    let centroid = new THREE.Vector3(0, 0, 0);
     let n = cubes.length;
 
     cubes.forEach(cube => {
@@ -97,7 +99,7 @@ function centroid() {
 // Calculate the radius of the scene
 function radius() {
     let maxDistance = 0;
-    let maxIndex;
+    let maxIndex = 0;
     let d;
 
     cubes.forEach((cube, i) => {
@@ -115,15 +117,11 @@ function radius() {
 
 // Calculate the distance of the cube to the center of the scene
 function distance(cube) {
-    let d = (cube.position.x - sceneCenter.x) * (cube.position.x - sceneCenter.x);
-    d += (cube.position.y - sceneCenter.y) * (cube.position.y - sceneCenter.y);
-    d += (cube.position.z - sceneCenter.z) * (cube.position.z - sceneCenter.z);
-
-    return Math.sqrt(d);
+    return cube.position.distanceTo(sceneCenter);
 }
 
 // Handles mouse click - selects the clicked cube
-function onClick(event) {
+function onMouseDown(event) {
     event.preventDefault();
 
     let intersects;
@@ -163,24 +161,32 @@ function onWheel(event) {
     else if (event.deltaY > 0) camera.position.z += 1;
 }
 
-function onMouseMove(event){
+function onMouseMove(event) {
     event.preventDefault();
-    let transVector = {x: 0, y: 0, z: 0};
+    let currentMouse = new THREE.Vector2((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
+    let mouseMovement = currentMouse.sub(mouse);
 
-    if(event.buttons == 1){
-        if(transformation_mode == 0 && selectedCube){ // Translation
-            transVector.x = (event.movementX / window.innerWidth) * 2 - 1;
-            transVector.y = -(event.movementY / window.innerHeight) * 2 + 1;
-
-            selectedCube.translate(transVector);
+    if (event.buttons == 1) {
+        if (transformation_mode == 0 && selectedCube) { // Translation
+            /* transVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+            transVector.y = -(event.clientY / window.innerHeight) * 2 + 1; */
+            let d = selectedCube.position.distanceTo(camera.position);
+            /*mouseMovement.multiplyScalar(5/d);
+            selectedCube.translate({
+                x: mouseMovement.x,
+                y: mouseMovement.y,
+                z: 0
+            }); */
+            selectedCube.position.x = currentMouse.x;
+            selectedCube.position.y = currentMouse.y;
         }
     }
+
+    mouse = currentMouse;
 }
 
 // Updates the scene
 function updateScene() {
-
-
 
     cubes.forEach(cube => {
         cube.update();
@@ -188,16 +194,17 @@ function updateScene() {
 
     sceneCenter = centroid();
     sceneRadius = radius();
-    scene.position.x = sceneCenter.x;
+    //console.log(sceneRadius);
+    /* scene.position.x = sceneCenter.x;
     scene.position.y = sceneCenter.y;
-    scene.position.z = sceneCenter.z;
+    scene.position.z = sceneCenter.z; */
+
 
     sceneArcball.position = sceneCenter;
     sceneArcball.radius = sceneRadius;
     sceneArcball.update();
     if (selectedCube === undefined && transformation_mode == 1) sceneArcball.addToScene();
     else sceneArcball.removeFromScene();
-
 }
 
 

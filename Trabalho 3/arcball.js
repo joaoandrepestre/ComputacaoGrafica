@@ -14,7 +14,7 @@ class Arcball {
 
         this.mesh = new THREE.Mesh(geometry, material);
 
-        // // Defines the arcballs initial position
+        // Defines the arcballs initial position
         this.update();
     }
 
@@ -40,6 +40,12 @@ class Arcball {
         this.mesh.position.x = this.position.x;
         this.mesh.position.y = this.position.y;
         this.mesh.position.z = this.position.z;
+
+        let scale = this.radius / this.mesh.geometry.parameters.radius;
+
+        this.mesh.scale.x = scale;
+        this.mesh.scale.y = scale;
+        this.mesh.scale.z = scale;
     }
 
 }

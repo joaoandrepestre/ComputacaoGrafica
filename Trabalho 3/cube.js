@@ -38,6 +38,8 @@ class Cube {
 
         this.mesh = new THREE.Mesh(geometry, material);
 
+        this.mouseProjection = undefined
+
         // Defines the cubes initial position and rotation
         this.update();
 

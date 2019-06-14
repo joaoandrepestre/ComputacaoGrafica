@@ -139,6 +139,7 @@ function onMouseDown(event) {
             cubes.some(cube => {
                 if (intersects[interIndex].object === cube.mesh) {
                     selectedCube = cube;
+                    selectedCube.mouseProjection = intersects[interIndex].point;
                     return true;
                 }
                 return false;
@@ -164,25 +165,29 @@ function onWheel(event) {
 function onMouseMove(event) {
     event.preventDefault();
     let currentMouse = new THREE.Vector2((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
-    let mouseMovement = currentMouse.sub(mouse);
+    let intersects;
+    let currentMouseProjection;
 
-    if (event.buttons == 1) {
-        if (transformation_mode == 0 && selectedCube) { // Translation
-            /* transVector.x = (event.clientX / window.innerWidth) * 2 - 1;
-            transVector.y = -(event.clientY / window.innerHeight) * 2 + 1; */
-            let d = selectedCube.position.distanceTo(camera.position);
-            /*mouseMovement.multiplyScalar(5/d);
-            selectedCube.translate({
-                x: mouseMovement.x,
-                y: mouseMovement.y,
-                z: 0
-            }); */
-            selectedCube.position.x = currentMouse.x;
-            selectedCube.position.y = currentMouse.y;
+    if (selectedCube) {
+        if (event.buttons == 1) {
+            transformation_mode = 0;
+            raycaster.setFromCamera(currentMouse, camera);
+            intersects = raycaster.intersectObject(selectedCube.mesh);
+            currentMouseProjection = undefined;
+            if (intersects.length > 0) currentMouseProjection = intersects[0].point;
+
+            selectedCube.position.x = selectedCube.mouseProjection.x;
+            selectedCube.position.y = selectedCube.mouseProjection.y;
         }
+        if (event.buttons == 2) {
+            transformation_mode = 1;
+        }
+
+        if (currentMouseProjection != undefined) selectedCube.mouseProjection = currentMouseProjection;
     }
 
     mouse = currentMouse;
+    transformation_mode = 0;
 }
 
 // Updates the scene

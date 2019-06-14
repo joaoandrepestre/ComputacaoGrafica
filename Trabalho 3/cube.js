@@ -37,8 +37,9 @@ class Cube {
         });
 
         this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.rotation.copy(this.rotation);
 
-        this.mouseProjection = undefined
+        this.mouseProjection = undefined;
 
         // Defines the cubes initial position and rotation
         this.update();
@@ -75,17 +76,11 @@ class Cube {
 
     // Updates the cubes position and rotation
     update() {
-        this.mesh.position.x = this.position.x;
-        this.mesh.position.y = this.position.y;
-        this.mesh.position.z = this.position.z;
-
-        this.mesh.rotation.x = this.rotation.x;
-        this.mesh.rotation.y = this.rotation.y;
-        this.mesh.rotation.z = this.rotation.z;
+        this.mesh.position.copy(this.position);
 
         this.arcball.update();
 
-        if (selectedCube === this && transformation_mode == 1) this.arcball.addToScene();
+        if (selected === this && transformation_mode == 1) this.arcball.addToScene();
         else this.arcball.removeFromScene();
     }
 }

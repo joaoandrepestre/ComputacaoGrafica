@@ -14,6 +14,8 @@ class Arcball {
 
         this.mesh = new THREE.Mesh(geometry, material);
 
+        this.mouseProjection = undefined;
+
         // Defines the arcballs initial position
         this.update();
     }

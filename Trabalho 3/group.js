@@ -2,35 +2,48 @@ class Group {
 
     constructor(numberOfCubes) {
 
+        this.object = new THREE.Object3D();
+
         this.position = new THREE.Vector3();
         this.radius = 0;
         this.cubes = [];
 
         let pos = new THREE.Vector3();
-        let rot  = new THREE.Euler();
-        let size = new THREE.Vector3(1,1,1);
+        let rot = new THREE.Euler();
+        let size = new THREE.Vector3(1, 1, 1);
         for (let i = 0; i < numberOfCubes; i++) {
             pos = new THREE.Vector3(
                 -5 + 10 * Math.random(),
                 -5 + 10 * Math.random(),
                 -5 + 10 * Math.random()
             );
-            rot = new THREE.Euler(
+            /* rot = new THREE.Euler(
                 0 + 2 * Math.PI * Math.random(),
                 0 + 2 * Math.PI * Math.random(),
                 0 + 2 * Math.PI * Math.random(),
                 'XYZ'
-            );
+            ); */
             size = new THREE.Vector3(
                 1 + 2 * Math.random(),
                 1 + 2 * Math.random(),
                 1 + 2 * Math.random()
             );
-            this.cubes.push(new Cube(pos, rot, size));
+            let c = new Cube(pos, rot, size);
+            this.cubes.push(c);
         }
         this.findCentroid();
         this.findRadius();
         this.arcball = new Arcball(this.position, this.radius);
+
+        this.addToScene();
+    }
+
+    addToScene() {
+        this.cubes.forEach(cube => {
+            this.object.add(cube.mesh);
+            this.object.add(cube.arcball.mesh);
+        });
+        scene.add(this.object);
     }
 
     // Calculate the center os the scene 
@@ -77,6 +90,11 @@ class Group {
         return cube.position.distanceTo(this.position);
     }
 
+    rotate(quaternion) {
+        this.object.quaternion.copy(this.object.quaternion.multiply(quaternion));
+        this.object.quaternion.normalize();
+    }
+
     update() {
 
         this.cubes.forEach(cube => {
@@ -87,7 +105,8 @@ class Group {
         this.arcball.radius = this.findRadius();
 
         this.arcball.update();
-        if (selected === this && transformation_mode == 1) this.arcball.addToScene();
-        else this.arcball.removeFromScene();
+        if (selected === this && transformation_mode == 1) this.object.add(this.arcball.mesh);
+        else this.object.remove(this.arcball.mesh);
+
     }
 }

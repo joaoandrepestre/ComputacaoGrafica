@@ -20,16 +20,6 @@ class Arcball {
         this.update();
     }
 
-    // Adds the arcball to the scene
-    addToScene() {
-        scene.add(this.mesh);
-    }
-
-    // Removes the arcball from the scene
-    removeFromScene() {
-        scene.remove(this.mesh);
-    }
-
     // Translates the cube according to transVector
     translate(transVector) {
         this.position.x += transVector.x;
@@ -39,9 +29,7 @@ class Arcball {
 
     // Updates the arcballs position
     update() {
-        this.mesh.position.x = this.position.x;
-        this.mesh.position.y = this.position.y;
-        this.mesh.position.z = this.position.z;
+        this.mesh.position.copy(this.position);
 
         let scale = this.radius / this.mesh.geometry.parameters.radius;
 

@@ -38,24 +38,18 @@ class Cube {
 
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.rotation.copy(this.rotation);
+        //this.mesh.add(this.arcball.mesh);
 
         this.mouseProjection = undefined;
 
         // Defines the cubes initial position and rotation
         this.update();
 
-        // Adds it to the scene
-        this.addToScene();
     }
 
     // Calculate the diagonal of the cube
     diagonal() {
         return Math.sqrt(this.size.x * this.size.x + this.size.y * this.size.y + this.size.z * this.size.z);
-    }
-
-    // Adds the cube to the scene
-    addToScene() {
-        scene.add(this.mesh);
     }
 
     // Translates the cube according to transVector
@@ -68,10 +62,9 @@ class Cube {
     }
 
     // Rotate the cube according to rotVector
-    rotate(rotVector) {
-        this.rotation.x += rotVector.x;
-        this.rotation.y += rotVector.y;
-        this.rotation.z += rotVector.z;
+    rotate(quaternion) {
+        this.mesh.quaternion.copy(this.mesh.quaternion.multiply(quaternion));
+        this.mesh.quaternion.normalize();
     }
 
     // Updates the cubes position and rotation
@@ -80,7 +73,7 @@ class Cube {
 
         this.arcball.update();
 
-        if (selected === this && transformation_mode == 1) this.arcball.addToScene();
-        else this.arcball.removeFromScene();
+        if (selected === this && transformation_mode == 1) this.arcball.mesh.material.opacity = 0.3;
+        else this.arcball.mesh.material.opacity = 0;
     }
 }

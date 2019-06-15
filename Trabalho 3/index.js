@@ -22,7 +22,7 @@ let renderer;
 
 // Project variables
 let group;
-let selected = undefined;
+let selected;
 let transformation_mode = TRANSLATION; // 0 - translation; 1 - rotation
 
 
@@ -49,6 +49,7 @@ function setup() {
     scene.add(light);
 
     group = new Group(10);
+    selected = group;
 
     camera.position = group.position;
     camera.position.z += 1.1 * group.radius;
@@ -59,28 +60,27 @@ function onMouseDown(event) {
     event.preventDefault();
 
     let intersects;
-    let interIndex = 0;
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    intersects = raycaster.intersectObjects(scene.children);
+    intersects = raycaster.intersectObjects(group.object.children);
 
     if (intersects.length > 0) {
-        if (intersects[interIndex].object === group.arcball.mesh){
-             interIndex = 1;
-             selected.arcball.mouseProjection = intersects[0].point;
+        if (intersects[0].object === group.arcball.mesh) {
+            selected = group;
+            selected.arcball.mouseProjection = intersects[0].point;
         }
-        if (intersects[interIndex]) {
+        if (intersects[1]) {
             group.cubes.some(cube => {
-                if (intersects[interIndex].object === cube.mesh) {
+                if (intersects[1].object === cube.mesh) {
                     selected = cube;
-                    selected.mouseProjection = intersects[interIndex].point;
+                    selected.mouseProjection = intersects[1].point;
                     return true;
-                } else if (intersects[interIndex].object === cube.arcball.mesh) {
+                } else if (intersects[1].object === cube.arcball.mesh) {
                     selected = cube;
-                    selected.arcball.mouseProjection = intersects[interIndex].point;
+                    selected.arcball.mouseProjection = intersects[1].point;
                 }
                 return false;
             });
@@ -136,10 +136,11 @@ function onMouseMove(event) {
                 q.w = selected.arcball.mouseProjection.dot(currentMouseProjection);
                 q.normalize();
                 if (selected !== group) {
-                    selected.mesh.quaternion.copy(selected.mesh.quaternion.multiply(q));
-                    selected.mesh.quaternion.normalize();
-                    selected.arcball.mouseProjection = currentMouseProjection;
+                    selected.rotate(q);
+                } else {
+                    selected.rotate(q);
                 }
+                selected.arcball.mouseProjection = currentMouseProjection;
                 break;
         }
     }

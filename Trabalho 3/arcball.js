@@ -21,10 +21,11 @@ class Arcball {
     }
 
     // Translates the cube according to transVector
-    translate(transVector) {
+    translate(transVector) {/* 
         this.position.x += transVector.x;
         this.position.y += transVector.y;
-        this.position.z += transVector.z;
+        this.position.z += transVector.z; */
+        this.position.add(transVector);
     }
 
     // Updates the arcballs position

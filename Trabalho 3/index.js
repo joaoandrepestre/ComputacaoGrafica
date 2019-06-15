@@ -13,7 +13,7 @@ document.addEventListener('dblclick', onDoubleClick, false);
 document.addEventListener('wheel', onWheel, false);
 document.addEventListener('mousemove', onMouseMove, false);
 let raycaster = new THREE.Raycaster();
-let mouse = new THREE.Vector2();
+let mouse = new THREE.Vector3();
 
 // THREE js variables
 let scene;
@@ -63,6 +63,7 @@ function onMouseDown(event) {
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    mouse.z = 1;
 
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(group.object.children);
@@ -105,13 +106,18 @@ function onWheel(event) {
 function onMouseMove(event) {
     event.preventDefault();
 
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    let currentMouse = new THREE.Vector3(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1,
+        1);
+
+    /* mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; */
 
     raycaster.setFromCamera(mouse, camera);
 
     let intersects;
-    let currentMouseProjection;
+    let currentMouseProjection = selected.mouseProjection;
 
 
     if (event.buttons == 1) {
@@ -119,11 +125,19 @@ function onMouseMove(event) {
             case TRANSLATION:
                 if (selected !== group) {
                     intersects = raycaster.intersectObject(selected.mesh);
-                    if (intersects.length > 0) selected.mouseProjection = intersects[0].point;
-
-                    selected.position.x = selected.mouseProjection.x;
-                    selected.position.y = selected.mouseProjection.y;
+                    if (intersects.length > 0) currentMouseProjection = intersects[0].point;
+                    let move = currentMouse.clone().sub(mouse).multiplyScalar(0.5*mouse.distanceTo(camera.position));
+                    move = group.object.worldToLocal(move);
+                    console.log(move);
+                    selected.translate(move);
+                    /* console.log("World: ", selected.mouseProjection);
+                    let newPos = group.object.localToWorld(selected.mouseProjection);
+                    console.log("Local: ", newPos);
+                    //selected.position.copy(newPos);
+                    selected.position.x = newPos.x;
+                    selected.position.y = newPos.y; */
                 }
+                //selected.mouseProjection = currentMouseProjection;
                 break;
             case ROTATION:
                 intersects = raycaster.intersectObject(selected.arcball.mesh);
@@ -144,6 +158,8 @@ function onMouseMove(event) {
                 break;
         }
     }
+
+    mouse = currentMouse;
 
 }
 

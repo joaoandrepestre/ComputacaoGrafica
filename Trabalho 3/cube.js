@@ -54,9 +54,10 @@ class Cube {
 
     // Translates the cube according to transVector
     translate(transVector) {
+        this.position.add(transVector);/* 
         this.position.x += transVector.x;
         this.position.y += transVector.y;
-        this.position.z += transVector.z;
+        this.position.z += transVector.z; */
 
         this.arcball.translate(transVector);
     }

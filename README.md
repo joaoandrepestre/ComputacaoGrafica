@@ -3,7 +3,7 @@
 ## Trabalho 2 - Raycasting
 ## Trabalho 3 - Arcball
 
-### Instruções para uso de ambos os trabalhos encontram-se na landing page do repositório: [Landing Page](www.joaoandrepestre.github.io/ComputacaoGrafica)
+### Instruções para uso de ambos os trabalhos encontram-se na landing page do repositório: [Landing Page](https://joaoandrepestre.github.io/ComputacaoGrafica/)
 
 <!-- ## Como utilizar:
 1. Clonar o repositório

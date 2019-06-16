@@ -60,6 +60,7 @@ function onMouseDown(event) {
     event.preventDefault();
 
     let intersects;
+    interIndex = 0;
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -72,16 +73,18 @@ function onMouseDown(event) {
         if (intersects[0].object === group.arcball.mesh) {
             selected = group;
             selected.arcball.mouseProjection = intersects[0].point;
+            interIndex = 1;
         }
-        if (intersects[1]) {
+        if (intersects[interIndex]) {
             group.cubes.some(cube => {
-                if (intersects[1].object === cube.mesh) {
+                if (intersects[interIndex].object === cube.mesh) {
                     selected = cube;
-                    selected.mouseProjection = intersects[1].point;
+                    selected.mouseProjection = intersects[interIndex].point;
                     return true;
-                } else if (intersects[1].object === cube.arcball.mesh) {
+                } else if (intersects[interIndex].object === cube.arcball.mesh) {
                     selected = cube;
-                    selected.arcball.mouseProjection = intersects[1].point;
+                    selected.arcball.mouseProjection = intersects[interIndex].point;
+                    return true;
                 }
                 return false;
             });
@@ -111,9 +114,6 @@ function onMouseMove(event) {
         -(event.clientY / window.innerHeight) * 2 + 1,
         1);
 
-    /* mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; */
-
     raycaster.setFromCamera(mouse, camera);
 
     let intersects;
@@ -124,36 +124,25 @@ function onMouseMove(event) {
         switch (transformation_mode) {
             case TRANSLATION:
                 if (selected !== group) {
-                    intersects = raycaster.intersectObject(selected.mesh);
-                    if (intersects.length > 0) currentMouseProjection = intersects[0].point;
-                    let move = currentMouse.clone().sub(mouse).multiplyScalar(0.5*mouse.distanceTo(camera.position));
+                    let move = currentMouse.clone().sub(mouse).multiplyScalar(0.4 * mouse.distanceTo(camera.position));
                     move = group.object.worldToLocal(move);
-                    console.log(move);
                     selected.translate(move);
-                    /* console.log("World: ", selected.mouseProjection);
-                    let newPos = group.object.localToWorld(selected.mouseProjection);
-                    console.log("Local: ", newPos);
-                    //selected.position.copy(newPos);
-                    selected.position.x = newPos.x;
-                    selected.position.y = newPos.y; */
                 }
-                //selected.mouseProjection = currentMouseProjection;
                 break;
             case ROTATION:
                 intersects = raycaster.intersectObject(selected.arcball.mesh);
                 if (intersects.length > 0) currentMouseProjection = intersects[0].point;
+
+                let va = selected.arcball.getArcballVector(mouse.clone());
+                let vb = selected.arcball.getArcballVector(currentMouse.clone());
+
                 let q = new THREE.Quaternion();
-                let v = selected.arcball.mouseProjection.clone().cross(currentMouseProjection);
-                q.x = v.x;
-                q.y = v.y;
-                q.z = v.z;
-                q.w = selected.arcball.mouseProjection.dot(currentMouseProjection);
+                let axis = new THREE.Vector3().crossVectors(va, vb).normalize().multiplyScalar(selected.arcball.radius);
+                let angle = Math.acos(Math.min(1.0, va.dot(vb)));
+                if (selected !== group) angle *= selected.arcball.radius;
+                q.setFromAxisAngle(axis, angle);
                 q.normalize();
-                if (selected !== group) {
-                    selected.rotate(q);
-                } else {
-                    selected.rotate(q);
-                }
+                selected.rotate(q);
                 selected.arcball.mouseProjection = currentMouseProjection;
                 break;
         }

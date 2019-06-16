@@ -1,9 +1,9 @@
 class Cube {
 
     // Constructor - initializes the cubes local fields
-    constructor(_pos, _rot, _size) {
+    constructor(_pos, _q, _size) {
         this.position = _pos;
-        this.rotation = _rot;
+        this.quaternion = _q;
         this.size = _size;
 
         let arc_radius = 1.1 * this.diagonal() / 2;
@@ -37,7 +37,7 @@ class Cube {
         });
 
         this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.rotation.copy(this.rotation);
+        this.mesh.quaternion.copy(this.quaternion);
         //this.mesh.add(this.arcball.mesh);
 
         this.mouseProjection = undefined;
@@ -64,8 +64,7 @@ class Cube {
 
     // Rotate the cube according to rotVector
     rotate(quaternion) {
-        this.mesh.quaternion.copy(this.mesh.quaternion.multiply(quaternion));
-        this.mesh.quaternion.normalize();
+        this.mesh.quaternion.multiplyQuaternions(this.mesh.quaternion, quaternion).normalize();
     }
 
     // Updates the cubes position and rotation

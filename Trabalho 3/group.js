@@ -9,7 +9,7 @@ class Group {
         this.cubes = [];
 
         let pos = new THREE.Vector3();
-        let rot = new THREE.Euler();
+        let q = new THREE.Quaternion();
         let size = new THREE.Vector3(1, 1, 1);
         for (let i = 0; i < numberOfCubes; i++) {
             pos = new THREE.Vector3(
@@ -17,18 +17,18 @@ class Group {
                 -5 + 10 * Math.random(),
                 -5 + 10 * Math.random()
             );
-            /* rot = new THREE.Euler(
-                0 + 2 * Math.PI * Math.random(),
-                0 + 2 * Math.PI * Math.random(),
-                0 + 2 * Math.PI * Math.random(),
-                'XYZ'
-            ); */
+            q = new THREE.Quaternion(
+                -5 + 10 * Math.random(),
+                -5 + 10 * Math.random(),
+                -5 + 10 * Math.random(),
+                -5 + 10 * Math.random()
+            ).normalize();
             size = new THREE.Vector3(
                 1 + 2 * Math.random(),
                 1 + 2 * Math.random(),
                 1 + 2 * Math.random()
             );
-            let c = new Cube(pos, rot, size);
+            let c = new Cube(pos, q, size);
             this.cubes.push(c);
         }
         this.findCentroid();
@@ -91,8 +91,7 @@ class Group {
     }
 
     rotate(quaternion) {
-        this.object.quaternion.copy(this.object.quaternion.multiply(quaternion));
-        this.object.quaternion.normalize();
+        this.object.quaternion.multiplyQuaternions(this.object.quaternion, quaternion).normalize();
     }
 
     update() {

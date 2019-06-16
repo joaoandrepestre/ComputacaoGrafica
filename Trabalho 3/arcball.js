@@ -20,11 +20,24 @@ class Arcball {
         this.update();
     }
 
+    getArcballVector(point) {
+        point.y = -point.y;
+
+        let op2 = point.x * point.x + point.y * point.y;
+        if (op2 <= 1) {
+            point.z = Math.sqrt(1 - op2);
+        } else {
+            point.normalize();
+        }
+        return point;
+    }
+
     // Translates the cube according to transVector
-    translate(transVector) {/* 
-        this.position.x += transVector.x;
-        this.position.y += transVector.y;
-        this.position.z += transVector.z; */
+    translate(transVector) {
+        /* 
+                this.position.x += transVector.x;
+                this.position.y += transVector.y;
+                this.position.z += transVector.z; */
         this.position.add(transVector);
     }
 

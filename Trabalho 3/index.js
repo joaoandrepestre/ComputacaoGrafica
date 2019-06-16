@@ -23,7 +23,7 @@ let renderer;
 // Project variables
 let group;
 let selected;
-let transformation_mode = TRANSLATION; // 0 - translation; 1 - rotation
+let transformation_mode = TRANSLATION;
 
 
 
@@ -35,7 +35,6 @@ function setup() {
 
     // Creates a camera
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    //camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, frustumSize);
 
     // Creates a renderer
     renderer = new THREE.WebGLRenderer();
@@ -44,18 +43,16 @@ function setup() {
     renderer.sortObjects = true;
     document.body.appendChild(renderer.domElement);
 
-    let light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1).normalize();
-    scene.add(light);
-
+    // Creates a new group with 10 cubes
     group = new Group(10);
     selected = group;
 
+    // Sets the camera position
     camera.position = group.position;
-    camera.position.z += 1.1 * group.radius;
+    camera.position.z += 1.5 * group.radius;
 }
 
-// Handles mouse click - selects the clicked cube
+// Handles mouse down - selects the clicked object
 function onMouseDown(event) {
     event.preventDefault();
 
@@ -106,6 +103,7 @@ function onWheel(event) {
     else if (event.deltaY > 0) camera.position.z += 1;
 }
 
+// Handles mouse movement - translates or rotates the selected object
 function onMouseMove(event) {
     event.preventDefault();
 
@@ -114,36 +112,26 @@ function onMouseMove(event) {
         -(event.clientY / window.innerHeight) * 2 + 1,
         1);
 
-    raycaster.setFromCamera(mouse, camera);
+    //raycaster.setFromCamera(mouse, camera);
 
-    let intersects;
-    let currentMouseProjection = selected.mouseProjection;
+    //let intersects;
+    //let currentMouseProjection = selected.mouseProjection;
 
 
     if (event.buttons == 1) {
         switch (transformation_mode) {
             case TRANSLATION:
                 if (selected !== group) {
-                    let move = currentMouse.clone().sub(mouse).multiplyScalar(0.4 * mouse.distanceTo(camera.position));
-                    move = group.object.worldToLocal(move);
-                    selected.translate(move);
+                    group.handleTranslation(currentMouse);
                 }
                 break;
             case ROTATION:
-                intersects = raycaster.intersectObject(selected.arcball.mesh);
-                if (intersects.length > 0) currentMouseProjection = intersects[0].point;
+                /* intersects = raycaster.intersectObject(selected.arcball.mesh);
+                if (intersects.length > 0) currentMouseProjection = intersects[0].point; */
 
-                let va = selected.arcball.getArcballVector(mouse.clone());
-                let vb = selected.arcball.getArcballVector(currentMouse.clone());
+                selected.handleRotation(currentMouse);
 
-                let q = new THREE.Quaternion();
-                let axis = new THREE.Vector3().crossVectors(va, vb).normalize().multiplyScalar(selected.arcball.radius);
-                let angle = Math.acos(Math.min(1.0, va.dot(vb)));
-                if (selected !== group) angle *= selected.arcball.radius;
-                q.setFromAxisAngle(axis, angle);
-                q.normalize();
-                selected.rotate(q);
-                selected.arcball.mouseProjection = currentMouseProjection;
+                //selected.arcball.mouseProjection = currentMouseProjection;
                 break;
         }
     }

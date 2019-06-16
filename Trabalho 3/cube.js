@@ -54,12 +54,26 @@ class Cube {
 
     // Translates the cube according to transVector
     translate(transVector) {
-        this.position.add(transVector);/* 
-        this.position.x += transVector.x;
-        this.position.y += transVector.y;
-        this.position.z += transVector.z; */
+        this.position.add(transVector);
+        /* 
+                this.position.x += transVector.x;
+                this.position.y += transVector.y;
+                this.position.z += transVector.z; */
 
         this.arcball.translate(transVector);
+    }
+
+    // Calculates the quaternion for rotation
+    handleRotation(currentMouse) {
+        let va = this.arcball.getArcballVector(mouse.clone());
+        let vb = this.arcball.getArcballVector(currentMouse.clone());
+
+        let q = new THREE.Quaternion();
+        let axis = new THREE.Vector3().crossVectors(va, vb).normalize().multiplyScalar(this.arcball.radius);
+        let angle = Math.acos(Math.min(1.0, va.dot(vb))) * selected.arcball.radius;
+        q.setFromAxisAngle(axis, angle);
+        q.normalize();
+        this.rotate(q);
     }
 
     // Rotate the cube according to rotVector

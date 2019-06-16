@@ -1,5 +1,6 @@
 class Group {
 
+    // Constructor - initializes the groups local fields
     constructor(numberOfCubes) {
 
         this.object = new THREE.Object3D();
@@ -8,6 +9,7 @@ class Group {
         this.radius = 0;
         this.cubes = [];
 
+        // Creates random cubes
         let pos = new THREE.Vector3();
         let q = new THREE.Quaternion();
         let size = new THREE.Vector3(1, 1, 1);
@@ -38,6 +40,7 @@ class Group {
         this.addToScene();
     }
 
+    // Adds itself and its children to the scene
     addToScene() {
         this.cubes.forEach(cube => {
             this.object.add(cube.mesh);
@@ -90,10 +93,32 @@ class Group {
         return cube.position.distanceTo(this.position);
     }
 
+    // Calculatesthe translation vector
+    handleTranslation(currentMouse) {
+        let move = currentMouse.clone().sub(mouse).multiplyScalar(0.4 * mouse.distanceTo(camera.position));
+        move = this.object.worldToLocal(move);
+        selected.translate(move);
+    }
+
+    // Calculates the quaternion for rotation
+    handleRotation(currentMouse) {
+        let va = this.arcball.getArcballVector(mouse.clone());
+        let vb = this.arcball.getArcballVector(currentMouse.clone());
+
+        let q = new THREE.Quaternion();
+        let axis = new THREE.Vector3().crossVectors(va, vb).normalize().multiplyScalar(this.radius);
+        let angle = Math.acos(Math.min(1.0, va.dot(vb)));
+        q.setFromAxisAngle(axis, angle);
+        q.normalize();
+        this.rotate(q);
+    }
+
+    // Rotates the group of objects
     rotate(quaternion) {
         this.object.quaternion.multiplyQuaternions(this.object.quaternion, quaternion).normalize();
     }
 
+    // Updates itself and its children
     update() {
 
         this.cubes.forEach(cube => {

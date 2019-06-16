@@ -1,6 +1,11 @@
 # ComputacaoGrafica
 
-## Como utilizar:
+## Trabalho 2 - Raycasting
+## Trabalho 3 - Arcball
+
+### Instruções para uso de ambos os trabalhos encontram-se na landing page do repositório: [Landing Page](www.joaoandrepestre.github.io/ComputacaoGrafica)
+
+<!-- ## Como utilizar:
 1. Clonar o repositório
 2. Abrir arquivo index.html em um navegador
 3. Interagir com a interface definida
@@ -34,4 +39,4 @@
 ## Interseções
 1. Selecionando "mostrar interseções" o programa mostra as interseções no canvas
 * Interseções azuis denotam que o raio está entrando no polígono
-* Interseções vermelhas denotam que o raio está saindo do polígono
+* Interseções vermelhas denotam que o raio está saindo do polígono -->

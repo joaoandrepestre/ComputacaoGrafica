@@ -9,11 +9,13 @@ const far = 1000;
 
 // Event handling
 document.addEventListener('mousedown', onMouseDown, false);
+document.addEventListener('mouseup', onMouseUp, false);
 document.addEventListener('dblclick', onDoubleClick, false);
 document.addEventListener('wheel', onWheel, false);
 document.addEventListener('mousemove', onMouseMove, false);
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector3();
+let screenMouse = new THREE.Vector3();
 
 // THREE js variables
 let scene;
@@ -49,7 +51,7 @@ function setup() {
 
     // Sets the camera position
     camera.position = group.position;
-    camera.position.z += 1.5 * group.radius;
+    camera.position.z += 2 * group.radius;
 }
 
 // Handles mouse down - selects the clicked object
@@ -59,6 +61,9 @@ function onMouseDown(event) {
     let intersects;
     interIndex = 0;
 
+    screenMouse.x = event.clientX;
+    screenMouse.y = event.clientY;
+    screenMouse.z = 0;
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     mouse.z = 1;
@@ -89,6 +94,13 @@ function onMouseDown(event) {
     } else selected = group;
 }
 
+function onMouseUp(event) {
+    event.preventDefault();
+    group.object.position.copy(group.position);
+    camera.position.copy(group.position);
+    camera.position.z += 2 * group.radius;
+}
+
 // Handles mouse double click - toggles tranformation mode between translation and rotation
 function onDoubleClick(event) {
     event.preventDefault();
@@ -107,6 +119,7 @@ function onWheel(event) {
 function onMouseMove(event) {
     event.preventDefault();
 
+    let currentScreenMouse = new THREE.Vector3(event.clientX, event.clientY, 0);
     let currentMouse = new THREE.Vector3(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1,
@@ -122,7 +135,7 @@ function onMouseMove(event) {
         switch (transformation_mode) {
             case TRANSLATION:
                 if (selected !== group) {
-                    group.handleTranslation(currentMouse);
+                    group.handleTranslation(currentScreenMouse);
                 }
                 break;
             case ROTATION:
@@ -137,7 +150,7 @@ function onMouseMove(event) {
     }
 
     mouse = currentMouse;
-
+    screenMouse = currentScreenMouse;
 }
 
 // Animate function - called every frame of the animation

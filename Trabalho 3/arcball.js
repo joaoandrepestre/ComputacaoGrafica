@@ -22,7 +22,7 @@ class Arcball {
 
     // Returns the arcball vector for calculating the quaternion
     getArcballVector(point){
-        point.y = - point.y;
+        //point.y = - point.y;
 
         let op2 = point.x*point.x + point.y*point.y;
         if(op2 <= 1){

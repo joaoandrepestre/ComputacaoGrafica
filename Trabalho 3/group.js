@@ -33,10 +33,10 @@ class Group {
             let c = new Cube(pos, q, size);
             this.cubes.push(c);
         }
-        this.findCentroid();
+        this.object.position.copy(this.findCentroid());
         this.findRadius();
         this.arcball = new Arcball(this.position, this.radius);
-
+        
         this.addToScene();
     }
 
@@ -94,9 +94,11 @@ class Group {
     }
 
     // Calculatesthe translation vector
-    handleTranslation(currentMouse) {
-        let move = currentMouse.clone().sub(mouse).multiplyScalar(0.4 * mouse.distanceTo(camera.position));
-        move = this.object.worldToLocal(move);
+    handleTranslation(currentScreenMouse) {
+        let move = currentScreenMouse.clone().sub(screenMouse);
+        move.y = - move.y;
+        let mag = move.length();
+        move = this.object.worldToLocal(move).normalize().multiplyScalar(0.05*mag);
         selected.translate(move);
     }
 

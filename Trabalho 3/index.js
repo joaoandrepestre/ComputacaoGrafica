@@ -135,7 +135,7 @@ function onMouseMove(event) {
         switch (transformation_mode) {
             case TRANSLATION:
                 if (selected !== group) {
-                    group.handleTranslation(currentScreenMouse);
+                    group.handleTranslation(currentMouse);
                 }
                 break;
             case ROTATION:

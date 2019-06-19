@@ -94,12 +94,19 @@ class Group {
     }
 
     // Calculatesthe translation vector
-    handleTranslation(currentScreenMouse) {
-        let move = currentScreenMouse.clone().sub(screenMouse);
+    handleTranslation(currentMouse) {
+        /* let move = currentScreenMouse.clone().sub(screenMouse);
         move.y = - move.y;
         let mag = move.length();
         move = this.object.worldToLocal(move).normalize().multiplyScalar(0.05*mag);
-        selected.translate(move);
+        selected.translate(move); */
+        //let LocalMouse = this.object.worldToLocal(mouse);
+        //let mv = this.object.worldToLocal(currentMouse).unproject(camera);
+        let mv = currentMouse.clone().unproject(camera);
+        let pos = camera.position.clone();
+        pos.add(mv.sub(camera.position).normalize().multiplyScalar(mouse.distanceTo(camera.position)));
+        pos = this.object.worldToLocal(pos);
+        selected.position.copy(pos);
     }
 
     // Calculates the quaternion for rotation

@@ -100,8 +100,6 @@ class Group {
         let mag = move.length();
         move = this.object.worldToLocal(move).normalize().multiplyScalar(0.05*mag);
         selected.translate(move); */
-        //let LocalMouse = this.object.worldToLocal(mouse);
-        //let mv = this.object.worldToLocal(currentMouse).unproject(camera);
         let mv = currentMouse.clone().unproject(camera);
         let pos = camera.position.clone();
         pos.add(mv.sub(camera.position).normalize().multiplyScalar(mouse.distanceTo(camera.position)));

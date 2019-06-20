@@ -96,9 +96,11 @@ function onMouseDown(event) {
 
 function onMouseUp(event) {
     event.preventDefault();
-    group.object.position.copy(group.position);
-    camera.position.copy(group.position);
-    camera.position.z += 2 * group.radius;
+    if(!group.object.position.equals(group.position)){
+        group.object.position.copy(group.position);
+        camera.position.copy(group.position);
+        camera.position.z += 2 * group.radius;
+    }
 }
 
 // Handles mouse double click - toggles tranformation mode between translation and rotation
